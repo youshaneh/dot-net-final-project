@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FinalProject
 {
@@ -197,7 +195,17 @@ namespace FinalProject
             Page nextPage = new Page(home);
             while(nextPage != null)
             {
-                nextPage = nextPage();
+                try
+                {
+                    nextPage = nextPage();
+                }
+                catch
+                {
+                    Console.Clear();
+                    Console.Write("\n{0}Something went wrong. You will be redirected to the main page after pressing any key...", Renderer.paddingLeft);
+                    Console.ReadKey();
+                    nextPage = new Page(home);
+                }
             }
         }
 
@@ -262,7 +270,7 @@ namespace FinalProject
                         {
                             attemptLeft--;
                             if(attemptLeft <= 0) return new Page(home);
-                            clearPreviousLines(1);
+                            Console.Clear();
                             passwordComponent.setMessages(
                                 "You entered an Invalid password",
                                 "You have "+ attemptLeft + " more attempts to enter the correct password OR Press "+ BACK + " to go back to the previous screen.");
@@ -273,44 +281,68 @@ namespace FinalProject
         }
         static Page administrator()
         {
+            const int MAX_MOVIE_COUNT = 10;
+            String[] N_TH_STRING = new String[]{ "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Nineth", "Tenth" };
+
             Console.Clear();
             Console.WriteLine("\n{0}Welecome MobiePlex Administrator\n", Renderer.paddingLeft);
 
-            int movieCount;
-            String movieCountInput;
-            do
+            int movieCount = -1;
+            while(true)
             {
-                Console.Write(Renderer.paddingLeft);
-                Console.Write("How many movies are playing today?: ");
-                movieCountInput = Console.ReadLine();
-                //TODO: handle input number over maxium value
-                //TODO: show error message when necessary
-            } while (!int.TryParse(movieCountInput, out movieCount));
+                Console.Write("{0}How many movies are playing today?: ", Renderer.paddingLeft);
+                String movieCountInput = Console.ReadLine();
+                if(int.TryParse(movieCountInput, out movieCount))
+                {
+                    if (movieCount >= 0 && movieCount <= MAX_MOVIE_COUNT)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("{0}The number should be between 0 and 10. Please try again.", Renderer.paddingLeft);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("{0}Invalid input. Please try again.", Renderer.paddingLeft);
+                }
+            }
             Console.WriteLine("");
             Program.movies = new Movie[movieCount];
             for(int i = 0; i < movieCount; i++)
             {
-                Console.Write(Renderer.paddingLeft);
-                Console.Write("Please Enter the #" + (i + 1) + " Movie's Name: ");
-                String name = Console.ReadLine();
-                Console.Write(Renderer.paddingLeft);
-                Console.Write("Please Enter the Age Limit or Rating for the #" + (i + 1) + " Movie: "); //TODO: handle the spelling of #i
-                String ageLimit = Console.ReadLine(); //TODO: handle wrong inputs
-                movies[i] = new Movie(name, ageLimit);
+                Console.Write("{0}Please Enter the {1} Movie's Name: ", Renderer.paddingLeft, N_TH_STRING[i]);
+                String name = Console.ReadLine(); //TODO: check if we allow empty movie name
+                Console.Write("{0}Please Enter the Age Limit or Rating for the {1} Movie: ", Renderer.paddingLeft, N_TH_STRING[i]);
+                String ageLimitOrRating = Console.ReadLine();
+                while (getMinimumAge(ageLimitOrRating) < 0)
+                {
+                    Console.WriteLine("{0}Invalid input. Allowed values are G, PG, PG-13, R, NC-17, or a positive integer. Please try again.", Renderer.paddingLeft);
+                    Console.Write("{0}Please Enter the Age Limit or Rating for the {1} Movie: ", Renderer.paddingLeft, N_TH_STRING[i]);
+                    ageLimitOrRating = Console.ReadLine();
+                }
+                movies[i] = new Movie(name, ageLimitOrRating);
             }
+
+            String[] movieListItems = new string[movies.Length];
+            for (int i = 0; i < movies.Length; i++)
+            {
+                movieListItems[i] = Renderer.paddingLeft + (i + 1) + ". " + movies[i].getName() + "{" + movies[i].getAgeLimit() + "}";
+            }
+            MessageComponent movieListComponent = new MessageComponent(movieListItems);
 
             renderer
                 .clear()
-                .addComponent(bannderComponent);
-            renderer.render();
+                .addComponent(bannderComponent)
+                .addComponent(movieListComponent)
+                .addComponent(new MessageComponent("", "Your Movies Playing Today Are Listed Above. Are you satisfied? (Y/N)"));
 
-            for (int i = 0; i < movies.Length; i++)
-            {
-                Console.WriteLine("       {0}. {1} {{{2}}}", i + 1, movies[i].getName(), movies[i].getAgeLimit());
-            }
             while (true)
             {
-                Console.WriteLine("\nYour Movies Playing Today Are Listed Above. Are you satisfied? (Y/N)");
+                Console.Clear();
+                renderer.render();
+                Console.Write(Renderer.paddingLeft);
                 String confirmed = Console.ReadLine();
                 switch (confirmed)
                 {
@@ -323,11 +355,6 @@ namespace FinalProject
                     case "n":
                         {
                             return new Page(administrator);
-                        }
-                    default:
-                        {
-                            clearPreviousLines(3);
-                            break;
                         }
                 }
             }
@@ -390,26 +417,22 @@ namespace FinalProject
             Console.Write(Renderer.paddingLeft);
             Console.Write("Please Enter Your Age for Verification: ");
             String ageInput = Console.ReadLine();
-            int userAge;
-            if (int.TryParse(ageInput, out userAge))
+            if (int.TryParse(ageInput, out int userAge))
             {
-                int minimumAgeForTheMovie = 0; //TODO: get the correct minimum age from Program.movies[i].getAgeLimit()
-                if(userAge < minimumAgeForTheMovie)
+                int minimumAgeForTheMovie = getMinimumAge(Program.movies[selectedIndex].getAgeLimit());
+                if (userAge < minimumAgeForTheMovie)
                 {
-                    Console.Write(Renderer.paddingLeft);
-                    Console.WriteLine("Invalid input. Press any key to start over.");
+                    Console.WriteLine("{0}You are under the age limit. Press any key to choose another movie.", Renderer.paddingLeft);
                     Console.ReadKey();
                     return new Page(guest);
                 }
             }
             else
             {
-                Console.Write(Renderer.paddingLeft);
-                Console.WriteLine("Invalid input. Press any key to start over.");
+                Console.WriteLine("{0}Invalid input. Press any key to start over.", Renderer.paddingLeft);
                 Console.ReadKey();
                 return new Page(guest);
             }
-
 
             MessageComponent ageInputPlaceholderComponent = new MessageComponent("", "");
             ageInputPlaceholderComponent.setClearTheRestOfEachLine(false);
@@ -445,9 +468,21 @@ namespace FinalProject
 
         }
 
-        static Page end()
+        private static int getMinimumAge(String ageLimitOrRating)
         {
-            return null;
+            if (int.TryParse(ageLimitOrRating, out int ageLimit))
+            {
+                return ageLimit;
+            }
+            switch (ageLimitOrRating)
+            {
+                case "G": return 0;
+                case "PG": return 10;
+                case "PG-13": return 13;
+                case "R": return 15;
+                case "NC-17": return 17;
+            }
+            return -1;
         }
 
         private static void clearPreviousLines(int lineCount)
