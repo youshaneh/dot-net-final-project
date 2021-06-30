@@ -1,0 +1,7 @@
+C:\Users\yoush\Desktop\conestoga\dot_net\final project\FinalProject\FinalProject\bin\Debug\FinalProject.exe.config
+C:\Users\yoush\Desktop\conestoga\dot_net\final project\FinalProject\FinalProject\bin\Debug\FinalProject.exe
+C:\Users\yoush\Desktop\conestoga\dot_net\final project\FinalProject\FinalProject\bin\Debug\FinalProject.pdb
+C:\Users\yoush\Desktop\conestoga\dot_net\final project\FinalProject\FinalProject\obj\Debug\FinalProject.csprojAssemblyReference.cache
+C:\Users\yoush\Desktop\conestoga\dot_net\final project\FinalProject\FinalProject\obj\Debug\FinalProject.csproj.CoreCompileInputs.cache
+C:\Users\yoush\Desktop\conestoga\dot_net\final project\FinalProject\FinalProject\obj\Debug\FinalProject.exe
+C:\Users\yoush\Desktop\conestoga\dot_net\final project\FinalProject\FinalProject\obj\Debug\FinalProject.pdb
