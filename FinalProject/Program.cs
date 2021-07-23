@@ -211,10 +211,13 @@ namespace FinalProject
 
         static Page home()
         {
+            Console.CursorVisible = false;
             MultipleChoiceComponent mainMenuComponent = new MultipleChoiceComponent("Administrator", "Guests");
+            MessageComponent instructionComponent = new MessageComponent("Please select from the following options:", "");
             renderer
                 .clear()
                 .addComponent(bannderComponent)
+                .addComponent(instructionComponent)
                 .addComponent(mainMenuComponent);
             while (true)
             {
@@ -242,6 +245,7 @@ namespace FinalProject
         }
         static Page password()
         {
+            Console.CursorVisible = true;
             const String BACK = "B";
             int attemptLeft = 5;
 
@@ -281,6 +285,7 @@ namespace FinalProject
         }
         static Page administrator()
         {
+            Console.CursorVisible = true;
             const int MAX_MOVIE_COUNT = 10;
             String[] N_TH_STRING = new String[]{ "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Nineth", "Tenth" };
 
@@ -312,8 +317,14 @@ namespace FinalProject
             Program.movies = new Movie[movieCount];
             for(int i = 0; i < movieCount; i++)
             {
-                Console.Write("{0}Please Enter the {1} Movie's Name: ", Renderer.paddingLeft, N_TH_STRING[i]);
-                String name = Console.ReadLine(); //TODO: check if we allow empty movie name
+                Console.Write("\n{0}Please Enter the {1} Movie's Name: ", Renderer.paddingLeft, N_TH_STRING[i]);
+                String name = Console.ReadLine();
+                while(name.Trim(' ') == "")
+                {
+                    Console.WriteLine("{0}Movie name can not be empty. Please try again.", Renderer.paddingLeft);
+                    Console.Write("{0}Please Enter the {1} Movie's Name: ", Renderer.paddingLeft, N_TH_STRING[i]);
+                    name = Console.ReadLine();
+                }
                 Console.Write("{0}Please Enter the Age Limit or Rating for the {1} Movie: ", Renderer.paddingLeft, N_TH_STRING[i]);
                 String ageLimitOrRating = Console.ReadLine();
                 while (getMinimumAge(ageLimitOrRating) < 0)
@@ -356,12 +367,19 @@ namespace FinalProject
                         {
                             return new Page(administrator);
                         }
+                    default:
+                        {
+                            Console.Write("{0}Invalid input. Press any key to continue.", Renderer.paddingLeft);
+                            Console.ReadKey();
+                            break;
+                        }
                 }
             }
         }
         static Page guest()
         {
-            if(Program.movies.Length == 0)
+            Console.CursorVisible = false;
+            if (Program.movies.Length == 0)
             {
                 renderer
                     .clear()
