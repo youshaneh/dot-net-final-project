@@ -314,6 +314,11 @@ namespace FinalProject
                 }
             }
             Console.WriteLine("");
+            Console.WriteLine("   G – General Audience, any age is good");
+            Console.WriteLine("   PG – We will take PG as 10 years or older");
+            Console.WriteLine("   PG - 13 – We will take PG-13 as 13 years or older");
+            Console.WriteLine("   R – We will take R as 15 years or older.Don’t worry about accompany by parent case.");
+            Console.WriteLine("   NC - 17 – We will take NC-17 as 17 years or older");
             Program.movies = new Movie[movieCount];
             for(int i = 0; i < movieCount; i++)
             {
