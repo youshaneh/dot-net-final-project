@@ -316,9 +316,9 @@ namespace FinalProject
             Console.WriteLine("");
             Console.WriteLine("   G – General Audience, any age is good");
             Console.WriteLine("   PG – We will take PG as 10 years or older");
-            Console.WriteLine("   PG - 13 – We will take PG-13 as 13 years or older");
-            Console.WriteLine("   R – We will take R as 15 years or older.Don’t worry about accompany by parent case.");
-            Console.WriteLine("   NC - 17 – We will take NC-17 as 17 years or older");
+            Console.WriteLine("   PG-13 – We will take PG-13 as 13 years or older");
+            Console.WriteLine("   R – We will take R as 15 years or older. Don’t worry about accompany by parent case.");
+            Console.WriteLine("   NC-17 – We will take NC-17 as 17 years or older");
             Program.movies = new Movie[movieCount];
             for(int i = 0; i < movieCount; i++)
             {
@@ -332,9 +332,9 @@ namespace FinalProject
                 }
                 Console.Write("{0}Please Enter the Age Limit or Rating for the {1} Movie: ", Renderer.paddingLeft, N_TH_STRING[i]);
                 String ageLimitOrRating = Console.ReadLine();
-                while (getMinimumAge(ageLimitOrRating) < 0)
+                while (getMinimumAge(ageLimitOrRating) < 0 || getMinimumAge(ageLimitOrRating) > 100)
                 {
-                    Console.WriteLine("{0}Invalid input. Allowed values are G, PG, PG-13, R, NC-17, or a positive integer. Please try again.", Renderer.paddingLeft);
+                    Console.WriteLine("{0}Invalid input. Allowed values are G, PG, PG-13, R, NC-17, or an integer between 0 and 100. Please try again.", Renderer.paddingLeft);
                     Console.Write("{0}Please Enter the Age Limit or Rating for the {1} Movie: ", Renderer.paddingLeft, N_TH_STRING[i]);
                     ageLimitOrRating = Console.ReadLine();
                 }
@@ -443,6 +443,12 @@ namespace FinalProject
             if (int.TryParse(ageInput, out int userAge))
             {
                 int minimumAgeForTheMovie = getMinimumAge(Program.movies[selectedIndex].getAgeLimit());
+                if (userAge < 0)
+                {
+                    Console.WriteLine("{0}Invalid input. Press any key to start over.", Renderer.paddingLeft);
+                    Console.ReadKey();
+                    return new Page(guest);
+                }
                 if (userAge < minimumAgeForTheMovie)
                 {
                     Console.WriteLine("{0}You are under the age limit. Press any key to choose another movie.", Renderer.paddingLeft);
